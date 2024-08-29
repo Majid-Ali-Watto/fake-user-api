@@ -2,14 +2,21 @@ import { generateUsers as _generateUsers, createNewUser as _createNewUser, getOn
 import { v4 } from "uuid";
 const uuid = v4;
 const getAllUsers = () => {
-	const allUsers = _generateUsers(100);
-	console.log(allUsers);
-	return allUsers;
+	try {
+		const allUsers = _generateUsers(100);
+		return allUsers;
+	} catch (error) {
+		throw error;
+	}
 };
 
 const getOneUser = (userId) => {
-	const user = _getOneUser(userId);
-	return user;
+	try {
+		const user = _getOneUser(userId);
+		return user;
+	} catch (error) {
+		throw error;
+	}
 };
 
 const createNewUser = (newUser) => {
@@ -19,17 +26,29 @@ const createNewUser = (newUser) => {
 		createdAt: new Date().toLocaleString("en-US", { timeZone: "UTC" }),
 		updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC" })
 	};
-	const createdUser = _createNewUser(userToInsert);
-	return createdUser;
+	try {
+		const createdUser = _createNewUser(userToInsert);
+		return createdUser;
+	} catch (error) {
+		throw error;
+	}
 };
 
 const updateOneUser = (userId, changes) => {
-	const updatedUser = _updateOneUser(userId, changes);
-	return updatedUser;
+	try {
+		const updatedUser = _updateOneUser(userId, changes);
+		return updatedUser;
+	} catch (error) {
+		throw error;
+	}
 };
 
 const deleteOneUser = (userId) => {
-	_deleteOneUser(userId);
+	try {
+		_deleteOneUser(userId);
+	} catch (error) {
+		throw error;
+	}
 };
 
 export { getAllUsers, getOneUser, createNewUser, updateOneUser, deleteOneUser };

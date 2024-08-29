@@ -1,8 +1,13 @@
 import { getAllUsers as _getAllUsers, getOneUser as _getOneUser, createNewUser as _createNewUser, updateOneUser as _updateOneUser, deleteOneUser as _deleteOneUser } from "../services/userService.js";
 
 const getAllUsers = (req, res) => {
-	const allUsers = _getAllUsers();
-	res.send({ status: "OK", data: allUsers });
+	try {
+		const allUsers = _getAllUsers();
+		res.send({ status: "OK", data: allUsers });
+	} catch (error) {
+		res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
+	}
+
 };
 
 const getOneUser = (req, res) => {
@@ -10,30 +15,51 @@ const getOneUser = (req, res) => {
 		params: { userId }
 	} = req;
 	if (!userId) {
-		return;
+		res.status(400).send({
+			status: "FAILED",
+			data: { error: "Parameter ':userId' can not be empty" }
+		});
 	}
-	const user = _getOneUser(userId);
-	res.send({ status: "OK", data: user });
+	try {
+		const user = _getOneUser(userId);
+		res.send({ status: "OK", data: user });
+	} catch (error) {
+		res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
+	}
+
 };
 
 const createNewUser = (req, res) => {
 	const { body } = req;
-	// if (!body.name || !body.mode || !body.equipment || !body.exercises || !body.trainerTips) {
-	// 	return;
-	// }
 	const newUser = {
 		firstName: body.firstName,
 		lastName: body.lastName,
 		email: body.email,
 		username: body.username,
-		password: body.password,
+		phone: body.phone,
 		age: body.age,
 		gender: body.gender,
 		country: body.country,
 		city: body.city
 	};
-	const createdUser = _createNewUser(newUser);
-	res.status(201).send({ status: "OK", data: createdUser });
+	for(const key in newUser) {
+		if(newUser[key] === undefined) {
+			 res.status(400).send({
+					status: "FAILED",
+					data: {
+						error: "One of the following keys is missing or is empty in request body: 'firstName','lastName','email','username','phone','age','gender','country','city'"
+					}
+				});
+				return;
+		}
+	}
+	try {
+		const createdUser = _createNewUser(newUser);
+		res.status(201).send({ status: "OK", data: createdUser });
+	} catch (error) {
+		  res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
+	}
+
 };
 
 const updateOneUser = (req, res) => {
@@ -42,10 +68,18 @@ const updateOneUser = (req, res) => {
 		params: { userId }
 	} = req;
 	if (!userId) {
-		return;
+		res.status(400).send({
+			status: "FAILED",
+			data: { error: "Parameter ':userId' can not be empty" }
+		});
 	}
-	const updatedUser = _updateOneUser(userId, body);
-	res.send({ status: "OK", data: updatedUser });
+	try {
+		const updatedUser = _updateOneUser(userId, body);
+		res.send({ status: "OK", data: updatedUser });
+	} catch (error) {
+		res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
+	}
+
 };
 
 const deleteOneUser = (req, res) => {
@@ -53,10 +87,18 @@ const deleteOneUser = (req, res) => {
 		params: { userId }
 	} = req;
 	if (!userId) {
-		return;
+		res.status(400).send({
+			status: "FAILED",
+			data: { error: "Parameter ':userId' can not be empty" }
+		});
 	}
-	_deleteOneUser(userId);
-	res.status(204).send({ status: "OK" });
+	try {
+		_deleteOneUser(userId);
+		res.status(204).send({ status: "OK" });
+	} catch (error) {
+		res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
+	}
+
 };
 
 export { getAllUsers, getOneUser, createNewUser, updateOneUser, deleteOneUser };
