@@ -1,0 +1,21 @@
+{
+	"name": "fake-user-api",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"dev": "nodemon src/index.js"
+	},
+	"keywords": [],
+	"author": "Majid Ali",
+	"license": "ISC",
+	"devDependencies": {
+		"nodemon": "^3.1.4"
+	},
+	"dependencies": {
+		"body-parser": "^1.20.2",
+		"express": "^4.19.2",
+		"uuid": "^10.0.0"
+	}
+}
