@@ -1,9 +1,9 @@
-import { generateUsers as _generateUsers, createNewUser as _createNewUser, getOneUser as _getOneUser, updateOneUser as _updateOneUser, deleteOneUser as _deleteOneUser } from "../database/User.js";
+import { getAllUsers as _getAllUsers, createNewUser as _createNewUser, getOneUser as _getOneUser, updateOneUser as _updateOneUser, deleteOneUser as _deleteOneUser } from "../database/User.js";
 import { v4 } from "uuid";
 const uuid = v4;
 const getAllUsers = () => {
 	try {
-		const allUsers = _generateUsers(100);
+		const allUsers = _getAllUsers();
 		return allUsers;
 	} catch (error) {
 		throw error;

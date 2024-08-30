@@ -1,11 +1,10 @@
-const users = [];
 import { v4 } from "uuid";
 const uuid = v4;
 function generateRandomHexColor() {
 	const hexCode = Math.floor(Math.random() * 16777215).toString(16);
 	return `${hexCode.padStart(6, "0")}`;
 }
-const generateUsers = (count) => {
+const generateUsers = (users) => {
 	const firstNames = ["Majid", "Ali", "Umair", "Basharat", "Salman", "Farhan", "Irfan", "Mudassir", "Safdar", "Mushtaq"];
 	const lastNames = ["Muzaffar", "Mubashir", "Kaleem", "Muzammil", "Hamza", "Rehman", "Tariq", "Ajmal", "Abrar", "Akmal"];
 	const domains = ["example.com", "mail.com", "webmail.com", "myemail.com", "domain.com"];
@@ -15,7 +14,7 @@ const generateUsers = (count) => {
 	const cities = ["New York", "Toronto", "London", "Sydney", "Berlin", "Paris", "Islamabad", "Tokyo", "São Paulo", "Cape Town"];
 	const interestsPool = ["Coding", "Gaming", "Hiking", "Design", "Photography", "Traveling", "Reading", "Music", "Cooking", "Fitness"];
 	try {
-		for (let i = 1; i <= count; i++) {
+		for (let i = 1; i <= 100; i++) {
 			const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
 			const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
 			const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${domains[Math.floor(Math.random() * domains.length)]}`;
@@ -45,11 +44,20 @@ const generateUsers = (count) => {
 			});
 		}
 
-		return users;
+		// return users;
 	} catch (error) {
 		throw { status: 500, message: error };
 	}
 };
+const users = [];
+generateUsers(users);
+const getAllUsers = ()=>{
+	try {
+		return users;
+	} catch (error) {
+		throw { status: 500, message: error };
+	}
+}
 const saveToDatabase = (user) => {
 	try {
 		users.push(user);
@@ -114,10 +122,10 @@ const updateOneUser = (userId, changes) => {
 	try {
 		const indexForUpdate = users.findIndex((user) => user.id === userId);
 		if (indexForUpdate === -1) {
-			 throw {
-					status: 400,
-					message: `Can't find user with the id '${userId}'`
-				};
+			throw {
+				status: 400,
+				message: `Can't find user with the id '${userId}'`
+			};
 		}
 		const updatedUser = {
 			...users[indexForUpdate],
@@ -136,10 +144,10 @@ const deleteOneUser = (userId) => {
 	try {
 		const indexForDeletion = users.findIndex((user) => user.id === userId);
 		if (indexForDeletion === -1) {
-			 throw {
-					status: 400,
-					message: `Can't find user with the id '${userId}'`
-				};
+			throw {
+				status: 400,
+				message: `Can't find user with the id '${userId}'`
+			};
 		}
 		users.splice(indexForDeletion, 1);
 	} catch (error) {
@@ -147,4 +155,4 @@ const deleteOneUser = (userId) => {
 	}
 };
 
-export { generateUsers, createNewUser, getOneUser, updateOneUser, deleteOneUser };
+export { getAllUsers, createNewUser, getOneUser, updateOneUser, deleteOneUser };
