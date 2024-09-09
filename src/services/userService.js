@@ -1,4 +1,5 @@
-import { getAllUsers as _getAllUsers, createNewUser as _createNewUser, getOneUser as _getOneUser, updateOneUser as _updateOneUser, deleteOneUser as _deleteOneUser } from "../database/User.js";
+"use strict";
+import { getAllUsers as _getAllUsers, createNewUser as _createNewUser, getOneUser as _getOneUser, updateOneUserPartially as _updateOneUserPartially, updateOneUserFully as _updateOneUserFully, deleteOneUser as _deleteOneUser } from "../database/User.js";
 import { v4 } from "uuid";
 const uuid = v4;
 const getAllUsers = () => {
@@ -34,9 +35,17 @@ const createNewUser = (newUser) => {
 	}
 };
 
-const updateOneUser = (userId, changes) => {
+const updateOneUserPartially = (userId, changes) => {
 	try {
-		const updatedUser = _updateOneUser(userId, changes);
+		const updatedUser = _updateOneUserPartially(userId, changes);
+		return updatedUser;
+	} catch (error) {
+		throw error;
+	}
+};
+const updateOneUserFully = (userId, changes) => {
+	try {
+		const updatedUser = _updateOneUserFully(userId, changes);
 		return updatedUser;
 	} catch (error) {
 		throw error;
@@ -45,10 +54,10 @@ const updateOneUser = (userId, changes) => {
 
 const deleteOneUser = (userId) => {
 	try {
-		_deleteOneUser(userId);
+		return _deleteOneUser(userId);
 	} catch (error) {
 		throw error;
 	}
 };
 
-export { getAllUsers, getOneUser, createNewUser, updateOneUser, deleteOneUser };
+export { getAllUsers, getOneUser, createNewUser, updateOneUserPartially, updateOneUserFully, deleteOneUser };

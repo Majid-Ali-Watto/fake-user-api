@@ -1,3 +1,4 @@
+"use strict";
 import { v4 } from "uuid";
 const uuid = v4;
 function generateRandomHexColor() {
@@ -49,15 +50,37 @@ const generateUsers = (users) => {
 		throw { status: 500, message: error };
 	}
 };
+const initialObj = {
+	id: null,
+	firstName: null,
+	lastName: null,
+	email: null,
+	username: null,
+	password: null,
+	age: null,
+	gender: null,
+	country: null,
+	city: null,
+	phone: null,
+	occupation: null,
+	company: null,
+	profilePicture: null,
+	bio: null,
+	interests: null,
+	registrationDate: null,
+	lastLoginDate: null,
+	isActive: null,
+	roles: null
+};
 const users = [];
 generateUsers(users);
-const getAllUsers = ()=>{
+const getAllUsers = () => {
 	try {
 		return users;
 	} catch (error) {
 		throw { status: 500, message: error };
 	}
-}
+};
 const saveToDatabase = (user) => {
 	try {
 		users.push(user);
@@ -88,37 +111,16 @@ const createNewUser = (newUser) => {
 			message: `Workout with the name '${newUser.firstName} ${newUser.lastName}' already exists`
 		};
 	}
-	const user = {
-		id: null,
-		firstName: null,
-		lastName: null,
-		email: null,
-		username: null,
-		password: null,
-		age: null,
-		gender: null,
-		country: null,
-		city: null,
-		phone: null,
-		occupation: null,
-		company: null,
-		profilePicture: null,
-		bio: null,
-		interests: null,
-		registrationDate: null,
-		lastLoginDate: null,
-		isActive: null,
-		roles: null
-	};
+
 	try {
-		saveToDatabase({ ...user, ...newUser });
+		saveToDatabase({ ...initialObj, ...newUser });
 		return newUser;
 	} catch (error) {
 		throw { status: 500, message: error?.message || error };
 	}
 };
 
-const updateOneUser = (userId, changes) => {
+const updateOneUserPartially = (userId, changes) => {
 	try {
 		const indexForUpdate = users.findIndex((user) => user.id === userId);
 		if (indexForUpdate === -1) {
@@ -140,6 +142,29 @@ const updateOneUser = (userId, changes) => {
 	}
 };
 
+const updateOneUserFully = (userId, changes) => {
+	try {
+		const indexForUpdate = users.findIndex((user) => user.id === userId);
+		if (indexForUpdate === -1) {
+			throw {
+				status: 400,
+				message: `Can't find user with the id '${userId}'`
+			};
+		}
+		const updatedUser = {
+			...initialObj,
+			id: userId,
+			...changes,
+			updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC" })
+		};
+		users[indexForUpdate] = updatedUser;
+		// saveToDatabase(users);
+		return updatedUser;
+	} catch (error) {
+		throw { status: error?.status || 500, message: error?.message || error };
+	}
+};
+
 const deleteOneUser = (userId) => {
 	try {
 		const indexForDeletion = users.findIndex((user) => user.id === userId);
@@ -149,10 +174,11 @@ const deleteOneUser = (userId) => {
 				message: `Can't find user with the id '${userId}'`
 			};
 		}
-		users.splice(indexForDeletion, 1);
+		const deletedUser = users.splice(indexForDeletion, 1);
+		return deletedUser;
 	} catch (error) {
 		throw { status: error?.status || 500, message: error?.message || error };
 	}
 };
 
-export { getAllUsers, createNewUser, getOneUser, updateOneUser, deleteOneUser };
+export { getAllUsers, createNewUser, getOneUser, updateOneUserPartially, updateOneUserFully, deleteOneUser };
