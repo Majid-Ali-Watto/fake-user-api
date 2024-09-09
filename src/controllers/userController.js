@@ -110,8 +110,8 @@ const deleteOneUser = (req, res) => {
 	}
 	try {
 		const deletedUser = _deleteOneUser(userId);
-		console.log('deleted ',deletedUser);
-		res.send({ data:deletedUser, status: "OK" });
+		console.log("deleted ", deletedUser);
+		res.send({ data: deletedUser, status: "OK" });
 	} catch (error) {
 		res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
 	}

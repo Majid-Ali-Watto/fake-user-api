@@ -74,6 +74,7 @@ const initialObj = {
 };
 const users = [];
 generateUsers(users);
+
 const getAllUsers = () => {
 	try {
 		return users;
@@ -108,7 +109,7 @@ const createNewUser = (newUser) => {
 	if (isAlreadyAdded) {
 		throw {
 			status: 400,
-			message: `Workout with the name '${newUser.firstName} ${newUser.lastName}' already exists`
+			message: `User with the name '${newUser.firstName} ${newUser.lastName}' already exists`
 		};
 	}
 
