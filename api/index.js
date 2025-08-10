@@ -1,22 +1,25 @@
-"use strict";
+// src/index.js
 import express from "express";
-import pkg from "body-parser";
-const { json } = pkg;
+import serverless from "serverless-http";
+import bodyParser from "body-parser";
 import { config } from "dotenv";
-config();
 import v1UserRouter from "./v1/routes/userRoutes.js";
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+config();
 
-app.use(json());
+const app = express();
+
+// Middleware
+app.use(bodyParser.json());
+
+// Routes
 app.use("/api/v1/users", v1UserRouter);
 
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something went wrong!");
 });
-app.listen(PORT, () => {
-  console.log(`API is listening on port ${PORT}`);
-});
-export default app;
+
+// No app.listen() here for Vercel
+export const handler = serverless(app);
