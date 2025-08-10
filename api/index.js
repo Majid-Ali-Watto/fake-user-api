@@ -19,3 +19,4 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`API is listening on port ${PORT}`);
 });
+export default app;
