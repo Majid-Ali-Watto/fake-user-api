@@ -1,9 +1,6 @@
-# Node.js dependencies
+# Dependencies
 node_modules/
-npm-debug.log
-yarn-error.log
-package-lock.json
-yarn.lock
+*/node_modules
 
 # Environment variables
 .env
@@ -18,35 +15,28 @@ yarn-error.log*
 # Runtime data
 pids/
 *.pid
-*.seed
 *.pid.lock
+*.seed
 
-# Coverage directory used by testing tools
+# Test coverage
 coverage/
 
-# Debugging and profiling data
-*.log
-*.out
-*.pid
+# Build output
+dist/
+build/
 
-# Optional npm cache directory
+# Cache directories
 .npm
-
-# Optional eslint cache
 .eslintcache
 
-# Optional REPL history
+# REPL history
 .node_repl_history
 
 # System files
 .DS_Store
 Thumbs.db
 
-# TypeScript build artifacts
-dist/
-build/
-
-# IDE directories and files
+# IDE/project files
 .vscode/
 .idea/
 *.suo
@@ -54,19 +44,15 @@ build/
 *.njsproj
 *.sln
 
-# Ignore compiled JavaScript files
+# Map files
 *.js.map
 
-# Ignore test directories and test coverage reports
-test/
-coverage/
-
-# Ignore temporary files
+# Temporary files
 tmp/
 temp/
 *.tmp
 
-# Ignore archive files
+# Archives
 *.zip
 *.tar.gz
 *.rar

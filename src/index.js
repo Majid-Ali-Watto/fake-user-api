@@ -12,6 +12,10 @@ const PORT = process.env.PORT || 3000;
 app.use(json());
 app.use("/api/v1/users", v1UserRouter);
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something went wrong!");
+});
 app.listen(PORT, () => {
-	console.log(`API is listening on port ${PORT}`);
+  console.log(`API is listening on port ${PORT}`);
 });
