@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fake User API – Free REST API with 100 Fake Users (CRUD &amp; Pagination)</title>
+  <meta name="description" content="Free fake backend for front-end developers: 100 generated users, full CRUD, pagination, JWT auth, roles, CORS. No API key. Try it live.">
+  <meta name="keywords" content="fake user api, fake jwt auth api, fake login api, fake roles api, fake rest api, mock api, dummy users api, test data, json api, crud api, free api, placeholder users">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Majid Ali">
+  <meta name="theme-color" content="#0f766e">
+  <link rel="canonical" href="https://fake-user-api-crud.vercel.app/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fake User API">
+  <meta property="og:title" content="Fake User API – Free REST API with 100 Fake Users">
+  <meta property="og:description" content="Free fake backend for front-end developers: users CRUD, JWT auth, roles, CORS. No API key.">
+  <meta property="og:url" content="https://fake-user-api-crud.vercel.app/">
+  <meta property="og:image" content="https://fake-user-api-crud.vercel.app/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Fake User API: free REST API with 100 fake users">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Fake User API – Free REST API with 100 Fake Users">
+  <meta name="twitter:description" content="Free fake backend for front-end developers: users CRUD, JWT auth, roles, CORS. No API key.">
+  <meta name="twitter:image" content="https://fake-user-api-crud.vercel.app/og-image.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://fake-user-api-crud.vercel.app/#website",
+        "url": "https://fake-user-api-crud.vercel.app/",
+        "name": "Fake User API",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "WebAPI",
+        "name": "Fake User API",
+        "description": "Free fake backend with 100 generated users, full CRUD, pagination, JWT authentication and roles, for front-end prototyping and testing.",
+        "url": "https://fake-user-api-crud.vercel.app/",
+        "documentation": "https://fake-user-api-crud.vercel.app/#endpoints",
+        "provider": { "@type": "Person", "name": "Majid Ali" },
+        "sameAs": ["https://github.com/Majid-Ali-Watto/fake-user-api"],
+        "isPartOf": { "@id": "https://fake-user-api-crud.vercel.app/#website" }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <h1>Fake User API: a free REST API with 100 fake users</h1>
+      <p>A dummy backend so you can focus on the front end: users CRUD, JWT login and refresh, roles, pagination and CORS, with no sign-up or API key. Try it below, then call it from your own code.</p>
+      <div class="base">
+        <code id="base-url">/api/v1/users</code>
+        <button type="button" id="copy-base">Copy</button>
+      </div>
+      <p class="links">
+        <a class="button" href="https://github.com/Majid-Ali-Watto/fake-user-api" rel="noopener">GitHub</a>
+        <a class="button" href="#reference">API reference</a>
+        <a class="button" href="/openapi.json">OpenAPI spec</a>
+      </p>
+      <pre class="snippet" id="snippet"></pre>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section aria-labelledby="users-h">
+      <div class="bar">
+        <h2 id="users-h">Users <small id="total"></small></h2>
+        <button type="button" id="new-user" class="primary">New user</button>
+      </div>
+      <p id="notice" class="notice" role="status" hidden></p>
+      <noscript><p class="notice">Enable JavaScript to browse the users here, or call the API directly: <code>/api/v1/users</code>.</p></noscript>
+      <div id="grid" class="grid" aria-live="polite"></div>
+      <nav class="pager" aria-label="Pagination">
+        <button type="button" id="prev">Previous</button>
+        <span id="page-info"></span>
+        <button type="button" id="next">Next</button>
+      </nav>
+    </section>
+
+    <section aria-labelledby="ref-h" id="endpoints">
+      <h2 id="ref-h">Endpoints</h2>
+      <table class="ref">
+        <thead><tr><th>Method</th><th>Path</th><th>Access</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr class="group"><td colspan="4">Users</td></tr>
+          <tr><td>GET</td><td><code>/api/v1/users?page=1&amp;limit=10</code></td><td class="access">public</td><td>Paginated list (limit up to 100)</td></tr>
+          <tr><td>GET</td><td><code>/api/v1/users/:userId</code></td><td class="access">public</td><td>One user (also <code>?userId=</code>)</td></tr>
+          <tr><td>POST</td><td><code>/api/v1/users</code></td><td class="access">public</td><td>Create a user</td></tr>
+          <tr><td>PATCH</td><td><code>/api/v1/users/:userId</code></td><td class="access">public</td><td>Update some fields</td></tr>
+          <tr><td>PUT</td><td><code>/api/v1/users/:userId</code></td><td class="access">public</td><td>Replace a user</td></tr>
+          <tr><td>DELETE</td><td><code>/api/v1/users/:userId</code></td><td class="access">public</td><td>Delete a user</td></tr>
+          <tr><td>PUT</td><td><code>/api/v1/users/:userId/roles</code></td><td class="access">admin</td><td>Set roles: <code>{ "roles": ["moderator"] }</code></td></tr>
+          <tr class="group"><td colspan="4">Auth (JWT)</td></tr>
+          <tr><td>POST</td><td><code>/api/v1/auth/register</code></td><td class="access">public</td><td>Create an account, returns tokens</td></tr>
+          <tr><td>POST</td><td><code>/api/v1/auth/login</code></td><td class="access">public</td><td><code>{ "email" | "username", "password" }</code>, returns tokens</td></tr>
+          <tr><td>POST</td><td><code>/api/v1/auth/refresh</code></td><td class="access">public</td><td><code>{ "refreshToken" }</code>, returns new tokens</td></tr>
+          <tr><td>POST</td><td><code>/api/v1/auth/logout</code></td><td class="access">public</td><td>Dummy logout (tokens are stateless)</td></tr>
+          <tr><td>GET</td><td><code>/api/v1/auth/me</code></td><td class="access">logged in</td><td>The current user</td></tr>
+          <tr class="group"><td colspan="4">Roles</td></tr>
+          <tr><td>GET</td><td><code>/api/v1/roles</code></td><td class="access">logged in</td><td>Roles and their permissions</td></tr>
+          <tr><td>GET</td><td><code>/api/v1/roles/:name</code></td><td class="access">logged in</td><td>One role: admin, moderator or user</td></tr>
+        </tbody>
+      </table>
+      <div class="demo">
+        <h3>Demo accounts</h3>
+        <p>Log in with password <code>password123</code> as <code>admin@example.com</code>, <code>moderator@example.com</code> or <code>user@example.com</code>. Every seeded user shares that password. Send the access token as <code>Authorization: Bearer &lt;token&gt;</code>. Access tokens last 1 hour, refresh tokens 7 days. Demo accounts are read-only; use <code>/auth/register</code> to create your own.</p>
+      </div>
+      <p class="muted">Open <a href="/api"><code>/api</code></a> for a JSON list of these endpoints. Data is kept in memory and regenerated when the server restarts, so changes are temporary. Limits per IP every 15 minutes: 300 requests, at most 60 of them writes.</p>
+    </section>
+
+    <section aria-labelledby="reference-h" id="reference">
+      <h2 id="reference-h">API reference</h2>
+      <p class="muted">Open an endpoint to see what it accepts and what it returns. Import <a href="/openapi.json">openapi.json</a> into Swagger Editor or Postman to generate a client or a collection.</p>
+      <div id="docs"><noscript><p class="notice">Enable JavaScript to browse request and response examples, or read <a href="/openapi.json">the OpenAPI spec</a>.</p></noscript></div>
+    </section>
+
+    <section aria-labelledby="faq-h" id="faq">
+      <h2 id="faq-h">Frequently asked questions</h2>
+      <details>
+        <summary>What is the Fake User API?</summary>
+        <p>A free, public REST API that returns 100 randomly generated users (name, email, username, phone, age, location, occupation and more). Use it as placeholder data while building front ends, writing tutorials, or testing HTTP clients.</p>
+      </details>
+      <details>
+        <summary>Do I need an API key?</summary>
+        <p>No. There is no sign-up and no key. Requests are limited per IP address to keep the service available for everyone.</p>
+      </details>
+      <details>
+        <summary>Can I call it from the browser?</summary>
+        <p>Yes. CORS is enabled, so <code>fetch</code> and <code>axios</code> calls from any origin work.</p>
+      </details>
+      <details>
+        <summary>How does authentication work?</summary>
+        <p>Log in at <code>POST /api/v1/auth/login</code> to get a JWT access token and refresh token. Send the access token in the <code>Authorization: Bearer</code> header. Missing, expired or wrong-type tokens return <code>401</code>, and a missing role returns <code>403</code>, so you can build and test real login, refresh and role-based UI against it. The secret is public, so never use it for real data.</p>
+      </details>
+      <details>
+        <summary>Does it support create, update and delete?</summary>
+        <p>Yes. <code>POST</code>, <code>PATCH</code>, <code>PUT</code> and <code>DELETE</code> all work and are validated. Data is kept in memory and resets when the server restarts, so changes are temporary.</p>
+      </details>
+      <details>
+        <summary>How do I paginate results?</summary>
+        <p>Use <code>?page=</code> and <code>?limit=</code> (up to 100 per page). The response includes <code>total</code> and <code>totalPages</code>.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="wrap site-footer">
+    <a href="https://github.com/Majid-Ali-Watto/fake-user-api" rel="noopener">GitHub</a>
+    <a href="https://github.com/Majid-Ali-Watto/fake-user-api/issues" rel="noopener">Report an issue</a>
+    <a href="/openapi.json">OpenAPI spec</a>
+    <a href="/api">API index</a>
+  </footer>
+
+  <dialog id="form-dialog">
+    <form id="user-form">
+      <h3 id="form-title"></h3>
+      <div class="fields">
+        <label>First name <input name="firstName" required minlength="2" maxlength="50"></label>
+        <label>Last name <input name="lastName" required minlength="2" maxlength="50"></label>
+        <label>Email <input name="email" type="email" required></label>
+        <label>Username <input name="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9]+"></label>
+        <label>Phone <input name="phone" required pattern="[0-9+\-() ]{7,20}"></label>
+        <label>Age <input name="age" type="number" required min="1" max="120"></label>
+        <label>Gender
+          <select name="gender" required>
+            <option value="male">male</option>
+            <option value="female">female</option>
+            <option value="other">other</option>
+          </select>
+        </label>
+        <label>Country <input name="country" required minlength="2" maxlength="50"></label>
+        <label>City <input name="city" required maxlength="50"></label>
+      </div>
+      <p id="form-error" class="error" role="alert" hidden></p>
+      <div class="actions">
+        <button type="button" id="cancel">Cancel</button>
+        <button type="submit" class="primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="detail-dialog">
+    <h3 id="detail-title"></h3>
+    <pre id="detail-json"></pre>
+    <div class="actions"><button type="button" id="detail-close">Close</button></div>
+  </dialog>
+
+  <script src="/app.js" type="module"></script>
+  <script src="/docs.js" type="module"></script>
+</body>
+</html>

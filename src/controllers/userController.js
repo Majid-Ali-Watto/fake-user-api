@@ -8,97 +8,56 @@ import {
   updateOneUserFully as _updateOneUserFully,
 } from "../services/userService.js";
 
+// Errors thrown here (or in the layers below) are formatted by the error
+// middleware in app.js.
+
 // Utility to extract userId from params or query
 const getUserIdFromReq = (req) => req.params.userId ?? req.query.userId;
 
-const getAllUsers = (req, res) => {
-  try {
-    const { page, limit } = req.query;
-    console.log("Pagination Query:", { page, limit });
-    const allUsers = _getAllUsers(); // returns an array
-
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-
-    const paginatedUsers = allUsers.slice(startIndex, endIndex);
-
-    res.json({
-      status: "OK",
-      page,
-      limit,
-      total: allUsers.length,
-      totalPages: Math.ceil(allUsers.length / limit),
-      count: paginatedUsers.length,
-      data: paginatedUsers,
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .json({ status: "FAILED", data: { error: error?.message || error } });
-  }
+const getOneUser = (req, res) => {
+  res.json({ status: "OK", data: _getOneUser(getUserIdFromReq(req)) });
 };
 
-function getOneUserByID(res, userId) {
-  try {
-    const user = _getOneUser(userId);
-    res.json({ status: "OK", data: user });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .json({ status: "FAILED", data: { error: error?.message || error } });
-  }
-}
+const getAllUsers = (req, res) => {
+  if (req.query.userId) return getOneUser(req, res);
 
-const getOneUser = (req, res) => {
-  const userId = getUserIdFromReq(req);
-  return getOneUserByID(res, userId);
+  const { page, limit } = req.query;
+  const allUsers = _getAllUsers();
+  const startIndex = (page - 1) * limit;
+  const paginatedUsers = allUsers.slice(startIndex, startIndex + limit);
+
+  res.json({
+    status: "OK",
+    page,
+    limit,
+    total: allUsers.length,
+    totalPages: Math.ceil(allUsers.length / limit),
+    count: paginatedUsers.length,
+    data: paginatedUsers,
+  });
 };
 
 const createNewUser = (req, res) => {
-  try {
-    const createdUser = _createNewUser(req.body);
-    res.status(201).json({ status: "OK", data: createdUser });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .json({ status: "FAILED", data: { error: error?.message || error } });
-  }
+  res.status(201).json({ status: "OK", data: _createNewUser(req.body) });
 };
 
 const updateOneUserPartially = (req, res) => {
-  try {
-    const userId = getUserIdFromReq(req);
-    const updatedUser = _updateOneUserPartially(userId, req.body);
-    res.json({ status: "OK", data: updatedUser });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .json({ status: "FAILED", data: { error: error?.message || error } });
-  }
+  const updatedUser = _updateOneUserPartially(getUserIdFromReq(req), req.body);
+  res.json({ status: "OK", data: updatedUser });
 };
 
 const updateOneUserFully = (req, res) => {
-  try {
-    const userId = getUserIdFromReq(req);
-    const updatedUser = _updateOneUserFully(userId, req.body);
-    res.json({ status: "OK", data: updatedUser });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .json({ status: "FAILED", data: { error: error?.message || error } });
-  }
+  const updatedUser = _updateOneUserFully(getUserIdFromReq(req), req.body);
+  res.json({ status: "OK", data: updatedUser });
+};
+
+const updateUserRoles = (req, res) => {
+  const updatedUser = _updateOneUserPartially(req.params.userId, { roles: req.body.roles });
+  res.json({ status: "OK", data: updatedUser });
 };
 
 const deleteOneUser = (req, res) => {
-  try {
-    const userId = getUserIdFromReq(req);
-    const deletedUser = _deleteOneUser(userId);
-    res.json({ status: "OK", data: deletedUser });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .json({ status: "FAILED", data: { error: error?.message || error } });
-  }
+  res.json({ status: "OK", data: _deleteOneUser(getUserIdFromReq(req)) });
 };
 
 export {
@@ -108,4 +67,5 @@ export {
   getOneUser,
   updateOneUserPartially,
   updateOneUserFully,
+  updateUserRoles,
 };

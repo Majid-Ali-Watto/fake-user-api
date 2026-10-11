@@ -1,5 +1,6 @@
 // validations/userValidation.js
 import Joi from "joi";
+import { ROLE_NAMES } from "../database/Role.js";
 
 export const createUserSchema = Joi.object({
   firstName: Joi.string().min(2).max(50).required(),
@@ -26,3 +27,7 @@ export const updateUserSchema = Joi.object({
   country: Joi.string().min(2).max(50),
   city: Joi.string().min(1).max(50),
 }).min(1); // at least one field required
+
+export const assignRolesSchema = Joi.object({
+  roles: Joi.array().items(Joi.string().valid(...ROLE_NAMES)).min(1).unique().required(),
+});

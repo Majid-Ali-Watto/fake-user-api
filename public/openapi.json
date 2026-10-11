@@ -1,0 +1,1882 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Fake User API",
+    "version": "1.0.0",
+    "description": "A free fake backend for front-end developers: 100 generated users with CRUD, JWT authentication and roles. All data is dummy and lives in memory.\n\nDemo accounts (password `password123`): admin@example.com, moderator@example.com, user@example.com. Every seeded user shares that password.",
+    "license": {
+      "name": "ISC"
+    },
+    "contact": {
+      "name": "Majid Ali",
+      "url": "https://github.com/Majid-Ali-Watto/fake-user-api"
+    }
+  },
+  "externalDocs": {
+    "description": "Source code on GitHub",
+    "url": "https://github.com/Majid-Ali-Watto/fake-user-api"
+  },
+  "servers": [
+    {
+      "url": "https://fake-user-api-crud.vercel.app",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Users"
+    },
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Roles"
+    }
+  ],
+  "paths": {
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "List users",
+        "description": "Paginated list. Pass `userId` to get one user instead.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number, starting at 1.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "example": 1
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Users per page (1 to 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "example": 10
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "description": "Return only this user.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of users (passwords are never included)",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "page": 1,
+                  "limit": 10,
+                  "total": 100,
+                  "totalPages": 10,
+                  "count": 1,
+                  "data": [
+                    {
+                      "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                      "firstName": "Salman",
+                      "lastName": "Tariq",
+                      "email": "salman.tariq@example.com",
+                      "username": "salmantariq",
+                      "age": 29,
+                      "gender": "male",
+                      "country": "Pakistan",
+                      "city": "Islamabad",
+                      "phone": "+9-123-456-7890",
+                      "occupation": "Software Developer",
+                      "company": "Tech Solutions Inc.",
+                      "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                      "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                      "interests": [
+                        "Coding",
+                        "Gaming",
+                        "Hiking"
+                      ],
+                      "registrationDate": "2023-4-12",
+                      "lastLoginDate": "2024-08-21",
+                      "isActive": true,
+                      "roles": [
+                        "user"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"limit\" must be less than or equal to 100"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create a user",
+        "description": "Creates a user with the `user` role. Users created here have no password and can't log in; use `/auth/register` for that.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUser"
+              },
+              "example": {
+                "firstName": "John",
+                "lastName": "Doe",
+                "email": "john@example.com",
+                "username": "johndoe",
+                "phone": "+1234567890",
+                "age": 30,
+                "gender": "male",
+                "country": "USA",
+                "city": "New York"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": "john@example.com",
+                    "username": "johndoe",
+                    "phone": "+1234567890",
+                    "age": 30,
+                    "gender": "male",
+                    "country": "USA",
+                    "city": "New York",
+                    "roles": [
+                      "user"
+                    ],
+                    "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                    "createdAt": "10/11/2026, 1:18:23 PM",
+                    "updatedAt": "10/11/2026, 1:18:23 PM"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"email\" must be a valid email",
+                    "\"age\" must be greater than or equal to 1"
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already in use",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "User with the email 'john@example.com' already exists"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update a user (userId in query)",
+        "description": "Same as `PATCH /api/v1/users/{userId}`, with the id in the query string.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "description": "The user's id (UUID v4). Alternative to the path parameter.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              },
+              "example": {
+                "city": "Rome"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                    "firstName": "Salman",
+                    "lastName": "Tariq",
+                    "email": "salman.tariq@example.com",
+                    "username": "salmantariq",
+                    "age": 29,
+                    "gender": "male",
+                    "country": "Pakistan",
+                    "city": "Rome",
+                    "phone": "+9-123-456-7890",
+                    "occupation": "Software Developer",
+                    "company": "Tech Solutions Inc.",
+                    "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                    "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                    "interests": [
+                      "Coding",
+                      "Gaming",
+                      "Hiking"
+                    ],
+                    "registrationDate": "2023-4-12",
+                    "lastLoginDate": "2024-08-21",
+                    "isActive": true,
+                    "roles": [
+                      "user"
+                    ],
+                    "updatedAt": "10/11/2026, 1:20:00 PM"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"userId\" is required"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Demo accounts are read-only",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Demo accounts are read-only. Create your own user or register to experiment."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user with that id",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Can't find user with the id '3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Replace a user (userId in query)",
+        "description": "Same as `PUT /api/v1/users/{userId}`, with the id in the query string.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "description": "The user's id (UUID v4). Alternative to the path parameter.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              },
+              "example": {
+                "firstName": "John",
+                "lastName": "Doe"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The replaced user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": null,
+                    "roles": [
+                      "user"
+                    ],
+                    "updatedAt": "10/11/2026, 1:20:00 PM"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"userId\" is required"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Demo accounts are read-only",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Demo accounts are read-only. Create your own user or register to experiment."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user with that id",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Can't find user with the id '3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete a user (userId in query)",
+        "description": "Same as `DELETE /api/v1/users/{userId}`, with the id in the query string.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "description": "The user's id (UUID v4). Alternative to the path parameter.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The deleted user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                    "firstName": "Salman",
+                    "lastName": "Tariq",
+                    "email": "salman.tariq@example.com",
+                    "username": "salmantariq",
+                    "age": 29,
+                    "gender": "male",
+                    "country": "Pakistan",
+                    "city": "Islamabad",
+                    "phone": "+9-123-456-7890",
+                    "occupation": "Software Developer",
+                    "company": "Tech Solutions Inc.",
+                    "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                    "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                    "interests": [
+                      "Coding",
+                      "Gaming",
+                      "Hiking"
+                    ],
+                    "registrationDate": "2023-4-12",
+                    "lastLoginDate": "2024-08-21",
+                    "isActive": true,
+                    "roles": [
+                      "user"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"userId\" is required"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Demo accounts are read-only",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Demo accounts are read-only. Create your own user or register to experiment."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user with that id",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Can't find user with the id '3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      }
+    },
+    "/api/v1/users/{userId}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get a user",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "The user's id (UUID v4).",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                    "firstName": "Salman",
+                    "lastName": "Tariq",
+                    "email": "salman.tariq@example.com",
+                    "username": "salmantariq",
+                    "age": 29,
+                    "gender": "male",
+                    "country": "Pakistan",
+                    "city": "Islamabad",
+                    "phone": "+9-123-456-7890",
+                    "occupation": "Software Developer",
+                    "company": "Tech Solutions Inc.",
+                    "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                    "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                    "interests": [
+                      "Coding",
+                      "Gaming",
+                      "Hiking"
+                    ],
+                    "registrationDate": "2023-4-12",
+                    "lastLoginDate": "2024-08-21",
+                    "isActive": true,
+                    "roles": [
+                      "user"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"userId\" must be a valid GUID"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user with that id",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Can't find user with the id '3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update some fields of a user",
+        "description": "Send any of the editable fields (at least one). Unknown fields, including `roles`, `id` and `password`, are ignored.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "The user's id (UUID v4).",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              },
+              "example": {
+                "city": "Rome"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                    "firstName": "Salman",
+                    "lastName": "Tariq",
+                    "email": "salman.tariq@example.com",
+                    "username": "salmantariq",
+                    "age": 29,
+                    "gender": "male",
+                    "country": "Pakistan",
+                    "city": "Rome",
+                    "phone": "+9-123-456-7890",
+                    "occupation": "Software Developer",
+                    "company": "Tech Solutions Inc.",
+                    "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                    "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                    "interests": [
+                      "Coding",
+                      "Gaming",
+                      "Hiking"
+                    ],
+                    "registrationDate": "2023-4-12",
+                    "lastLoginDate": "2024-08-21",
+                    "isActive": true,
+                    "roles": [
+                      "user"
+                    ],
+                    "updatedAt": "10/11/2026, 1:20:00 PM"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"value\" must have at least 1 key"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Demo accounts are read-only",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Demo accounts are read-only. Create your own user or register to experiment."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user with that id",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Can't find user with the id '3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Replace a user",
+        "description": "Replaces the user: fields you don't send become `null`. The id and roles are kept.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "The user's id (UUID v4).",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              },
+              "example": {
+                "firstName": "John",
+                "lastName": "Doe"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The replaced user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": null,
+                    "roles": [
+                      "user"
+                    ],
+                    "updatedAt": "10/11/2026, 1:20:00 PM"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"value\" must have at least 1 key"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Demo accounts are read-only",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Demo accounts are read-only. Create your own user or register to experiment."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user with that id",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Can't find user with the id '3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete a user",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "The user's id (UUID v4).",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The deleted user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                    "firstName": "Salman",
+                    "lastName": "Tariq",
+                    "email": "salman.tariq@example.com",
+                    "username": "salmantariq",
+                    "age": 29,
+                    "gender": "male",
+                    "country": "Pakistan",
+                    "city": "Islamabad",
+                    "phone": "+9-123-456-7890",
+                    "occupation": "Software Developer",
+                    "company": "Tech Solutions Inc.",
+                    "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                    "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                    "interests": [
+                      "Coding",
+                      "Gaming",
+                      "Hiking"
+                    ],
+                    "registrationDate": "2023-4-12",
+                    "lastLoginDate": "2024-08-21",
+                    "isActive": true,
+                    "roles": [
+                      "user"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Demo accounts are read-only",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Demo accounts are read-only. Create your own user or register to experiment."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user with that id",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Can't find user with the id '3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      }
+    },
+    "/api/v1/users/{userId}/roles": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Set a user's roles",
+        "description": "Admin only. The user's existing tokens keep their old roles until they refresh.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "The user's id (UUID v4).",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolesBody"
+              },
+              "example": {
+                "roles": [
+                  "moderator",
+                  "user"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                    "firstName": "Salman",
+                    "lastName": "Tariq",
+                    "email": "salman.tariq@example.com",
+                    "username": "salmantariq",
+                    "age": 29,
+                    "gender": "male",
+                    "country": "Pakistan",
+                    "city": "Islamabad",
+                    "phone": "+9-123-456-7890",
+                    "occupation": "Software Developer",
+                    "company": "Tech Solutions Inc.",
+                    "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                    "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                    "interests": [
+                      "Coding",
+                      "Gaming",
+                      "Hiking"
+                    ],
+                    "registrationDate": "2023-4-12",
+                    "lastLoginDate": "2024-08-21",
+                    "isActive": true,
+                    "roles": [
+                      "moderator",
+                      "user"
+                    ],
+                    "updatedAt": "10/11/2026, 1:20:00 PM"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"roles[0]\" must be one of [admin, moderator, user]"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, malformed, expired or wrong-type token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Missing or malformed Authorization header. Expected: Bearer <token>"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The token's roles don't allow this",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Forbidden: requires one of these roles: admin"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user with that id",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Can't find user with the id '3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "admin only"
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register",
+        "description": "Creates an account with the `user` role and logs it in. Accounts live in the memory of one server instance, so for logins you rely on, use the demo accounts.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              },
+              "example": {
+                "firstName": "John",
+                "lastName": "Doe",
+                "email": "john@example.com",
+                "username": "johndoe",
+                "password": "secret123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new user and tokens. Optional profile fields you leave out are not returned.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "user": {
+                      "firstName": "John",
+                      "lastName": "Doe",
+                      "email": "john@example.com",
+                      "username": "johndoe",
+                      "roles": [
+                        "user"
+                      ],
+                      "id": "3f2b8c1e-5d4a-4c7b-9e21-8a6f0d9b7c43",
+                      "createdAt": "10/11/2026, 1:18:23 PM",
+                      "updatedAt": "10/11/2026, 1:18:23 PM"
+                    },
+                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…",
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…",
+                    "tokenType": "Bearer",
+                    "expiresIn": 3600
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"password\" length must be at least 6 characters long"
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already in use",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "User with the email 'john@example.com' already exists"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Log in",
+        "description": "Send `email` or `username`, plus `password`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              },
+              "example": {
+                "email": "admin@example.com",
+                "password": "password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user and tokens. The access token lasts 1 hour, the refresh token 7 days.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "user": {
+                      "id": "a1b2c3d4-0000-4000-8000-000000000001",
+                      "firstName": "Admin",
+                      "lastName": "User",
+                      "email": "admin@example.com",
+                      "username": "admin",
+                      "age": 29,
+                      "gender": "male",
+                      "country": "Pakistan",
+                      "city": "Islamabad",
+                      "phone": "+9-123-456-7890",
+                      "occupation": "Software Developer",
+                      "company": "Tech Solutions Inc.",
+                      "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                      "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                      "interests": [
+                        "Coding",
+                        "Gaming",
+                        "Hiking"
+                      ],
+                      "registrationDate": "2023-4-12",
+                      "lastLoginDate": "2024-08-21",
+                      "isActive": true,
+                      "roles": [
+                        "admin"
+                      ]
+                    },
+                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…",
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…",
+                    "tokenType": "Bearer",
+                    "expiresIn": 3600
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"value\" must contain at least one of [email, username]"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Wrong email, username or password",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Invalid credentials"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Refresh tokens",
+        "description": "Exchanges a refresh token for a new pair. Current roles are loaded into the new tokens.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Refresh"
+              },
+              "example": {
+                "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user and new tokens",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "user": {
+                      "id": "a1b2c3d4-0000-4000-8000-000000000001",
+                      "firstName": "Admin",
+                      "lastName": "User",
+                      "email": "admin@example.com",
+                      "username": "admin",
+                      "age": 29,
+                      "gender": "male",
+                      "country": "Pakistan",
+                      "city": "Islamabad",
+                      "phone": "+9-123-456-7890",
+                      "occupation": "Software Developer",
+                      "company": "Tech Solutions Inc.",
+                      "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                      "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                      "interests": [
+                        "Coding",
+                        "Gaming",
+                        "Hiking"
+                      ],
+                      "registrationDate": "2023-4-12",
+                      "lastLoginDate": "2024-08-21",
+                      "isActive": true,
+                      "roles": [
+                        "admin"
+                      ]
+                    },
+                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…",
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…",
+                    "tokenType": "Bearer",
+                    "expiresIn": 3600
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "errors": [
+                    "\"refreshToken\" is required"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid, expired or wrong-type token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Token expired"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Log out",
+        "description": "A dummy: tokens are stateless, so there is nothing to revoke. Discard them on the client.",
+        "responses": {
+          "200": {
+            "description": "Always succeeds",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "message": "Logged out. Discard your tokens on the client."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "public"
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Current user",
+        "description": "The user from the access token. Falls back to the token's own claims if this server instance doesn't know the user.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The current user",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "id": "a1b2c3d4-0000-4000-8000-000000000001",
+                    "firstName": "Admin",
+                    "lastName": "User",
+                    "email": "admin@example.com",
+                    "username": "admin",
+                    "age": 29,
+                    "gender": "male",
+                    "country": "Pakistan",
+                    "city": "Islamabad",
+                    "phone": "+9-123-456-7890",
+                    "occupation": "Software Developer",
+                    "company": "Tech Solutions Inc.",
+                    "profilePicture": "https://placehold.jp/3d4070/ffffff/450x450.png?text=Salman Tariq",
+                    "bio": "Lorem ipsum dolor sit amet. Salman Tariq",
+                    "interests": [
+                      "Coding",
+                      "Gaming",
+                      "Hiking"
+                    ],
+                    "registrationDate": "2023-4-12",
+                    "lastLoginDate": "2024-08-21",
+                    "isActive": true,
+                    "roles": [
+                      "admin"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, malformed, expired or wrong-type token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Missing or malformed Authorization header. Expected: Bearer <token>"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "any logged-in user"
+      }
+    },
+    "/api/v1/roles": {
+      "get": {
+        "tags": [
+          "Roles"
+        ],
+        "summary": "List roles",
+        "description": "Any logged-in user. Roles are fixed: admin, moderator, user.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All roles with their permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": [
+                    {
+                      "name": "admin",
+                      "description": "Full access, including role management",
+                      "permissions": [
+                        "users:read",
+                        "users:write",
+                        "users:delete",
+                        "roles:read",
+                        "roles:manage"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, malformed, expired or wrong-type token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Missing or malformed Authorization header. Expected: Bearer <token>"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "any logged-in user"
+      }
+    },
+    "/api/v1/roles/{name}": {
+      "get": {
+        "tags": [
+          "Roles"
+        ],
+        "summary": "Get a role",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "description": "admin, moderator or user.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "admin",
+                "moderator",
+                "user"
+              ]
+            },
+            "example": "admin"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The role",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "OK",
+                  "data": {
+                    "name": "admin",
+                    "description": "Full access, including role management",
+                    "permissions": [
+                      "users:read",
+                      "users:write",
+                      "users:delete",
+                      "roles:read",
+                      "roles:manage"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, malformed, expired or wrong-type token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Missing or malformed Authorization header. Expected: Bearer <token>"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown role",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILED",
+                  "data": {
+                    "error": "Can't find role 'god'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-access": "any logged-in user"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Use the `accessToken` from login or register."
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "username": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other"
+            ]
+          },
+          "country": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "occupation": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "profilePicture": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "registrationDate": {
+            "type": "string"
+          },
+          "lastLoginDate": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "admin",
+                "moderator",
+                "user"
+              ]
+            }
+          }
+        }
+      },
+      "NewUser": {
+        "type": "object",
+        "required": [
+          "firstName",
+          "lastName",
+          "email",
+          "username",
+          "phone",
+          "age",
+          "gender",
+          "country",
+          "city"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Must be unique (case-insensitive)."
+          },
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "description": "Letters and digits only."
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^[0-9+\\-() ]{7,20}$",
+            "description": "7 to 20 characters: digits, + - ( ) and spaces."
+          },
+          "age": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          }
+        }
+      },
+      "UpdateUser": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Must be unique (case-insensitive)."
+          },
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "description": "Letters and digits only."
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^[0-9+\\-() ]{7,20}$",
+            "description": "7 to 20 characters: digits, + - ( ) and spaces."
+          },
+          "age": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          }
+        }
+      },
+      "Register": {
+        "type": "object",
+        "required": [
+          "firstName",
+          "lastName",
+          "email",
+          "username",
+          "password"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Must be unique (case-insensitive)."
+          },
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "description": "Letters and digits only."
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^[0-9+\\-() ]{7,20}$",
+            "description": "7 to 20 characters: digits, + - ( ) and spaces."
+          },
+          "age": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 100
+          }
+        },
+        "description": "phone, age, gender, country and city are optional here."
+      },
+      "Login": {
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "description": "Provide `email` or `username`."
+      },
+      "Refresh": {
+        "type": "object",
+        "required": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "RolesBody": {
+        "type": "object",
+        "required": [
+          "roles"
+        ],
+        "properties": {
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "admin",
+                "moderator",
+                "user"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

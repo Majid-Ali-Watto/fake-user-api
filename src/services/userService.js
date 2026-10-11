@@ -1,63 +1,28 @@
 "use strict";
-import { getAllUsers as _getAllUsers, createNewUser as _createNewUser, getOneUser as _getOneUser, updateOneUserPartially as _updateOneUserPartially, updateOneUserFully as _updateOneUserFully, deleteOneUser as _deleteOneUser } from "../database/User.js";
-import { v4 } from "uuid";
-const uuid = v4;
-const getAllUsers = () => {
-	try {
-		const allUsers = _getAllUsers();
-		return allUsers;
-	} catch (error) {
-		throw error;
-	}
+import { v4 as uuid } from "uuid";
+import {
+	getAllUsers as _getAllUsers,
+	getOneUser as _getOneUser,
+	createNewUser as _createNewUser,
+	updateOneUserPartially as _updateOneUserPartially,
+	updateOneUserFully as _updateOneUserFully,
+	deleteOneUser as _deleteOneUser
+} from "../database/User.js";
+
+// Passwords are never returned by the API.
+const publicUser = ({ password, ...user }) => user;
+
+const getAllUsers = () => _getAllUsers().map(publicUser);
+const getOneUser = (userId) => publicUser(_getOneUser(userId));
+
+// `extra` carries server-set fields (password) that the request body validation doesn't allow.
+const createNewUser = (newUser, extra = {}) => {
+	const now = new Date().toLocaleString("en-US", { timeZone: "UTC" });
+	return publicUser(_createNewUser({ ...newUser, roles: ["user"], ...extra, id: uuid(), createdAt: now, updatedAt: now }));
 };
 
-const getOneUser = (userId) => {
-	try {
-		const user = _getOneUser(userId);
-		return user;
-	} catch (error) {
-		throw error;
-	}
-};
+const updateOneUserPartially = (userId, changes) => publicUser(_updateOneUserPartially(userId, changes));
+const updateOneUserFully = (userId, changes) => publicUser(_updateOneUserFully(userId, changes));
+const deleteOneUser = (userId) => publicUser(_deleteOneUser(userId));
 
-const createNewUser = (newUser) => {
-	const userToInsert = {
-		...newUser,
-		id: uuid(),
-		createdAt: new Date().toLocaleString("en-US", { timeZone: "UTC" }),
-		updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC" })
-	};
-	try {
-		const createdUser = _createNewUser(userToInsert);
-		return createdUser;
-	} catch (error) {
-		throw error;
-	}
-};
-
-const updateOneUserPartially = (userId, changes) => {
-	try {
-		const updatedUser = _updateOneUserPartially(userId, changes);
-		return updatedUser;
-	} catch (error) {
-		throw error;
-	}
-};
-const updateOneUserFully = (userId, changes) => {
-	try {
-		const updatedUser = _updateOneUserFully(userId, changes);
-		return updatedUser;
-	} catch (error) {
-		throw error;
-	}
-};
-
-const deleteOneUser = (userId) => {
-	try {
-		return _deleteOneUser(userId);
-	} catch (error) {
-		throw error;
-	}
-};
-
-export { getAllUsers, getOneUser, createNewUser, updateOneUserPartially, updateOneUserFully, deleteOneUser };
+export { getAllUsers, getOneUser, createNewUser, updateOneUserPartially, updateOneUserFully, deleteOneUser, publicUser };
